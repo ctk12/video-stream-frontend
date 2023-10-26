@@ -10,7 +10,7 @@ function Broadcast() {
 
     async function init() {
         setLoading(true);
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         setStreamData(stream);
         const peer = createPeer();
         stream.getTracks().forEach(track => peer.addTrack(track, stream));
@@ -61,7 +61,7 @@ function Broadcast() {
     <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
       <h3 style={{ marginBottom: "20px", textAlign: "center" }}>Video Broadcast</h3>
        <div style={{ textAlign: "center" }}>{loading && (<p>Loading...</p>)}</div>
-       <Video style={{ maxHeight: streamData ? "500px" : "10px" }} srcObject={streamData} autoPlay />
+       <Video style={{ maxHeight: streamData ? "500px" : "10px" }} srcObject={streamData} autoPlay muted />
       
          <div style={{ textAlign: "center", margin: "10px 0" }}>
          {!loading && (

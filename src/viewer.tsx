@@ -13,7 +13,8 @@ function Viewer() {
     async function init() {
         setLoading(true);
         const peer = createPeer();
-        peer.addTransceiver("video", { direction: "recvonly" })
+        peer.addTransceiver("video", { direction: "recvonly" });
+        peer.addTransceiver('audio', { direction: 'recvonly' });
         setPeerData(peer);
         setLoading(false);
     }
