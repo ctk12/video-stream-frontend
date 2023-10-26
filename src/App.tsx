@@ -22,6 +22,13 @@ function App() {
       <a href="/viewer" style={aStyle}>Viewer</a>
     </div>
     )}
+
+    {pathname !== "/" && (
+    <div style={{ display: "flex", flexDirection: "column", gap: "20px", alignItems: "center", marginTop: "20px" }}>
+      <a href="/" style={aStyle}>Home</a>
+      <p>Note: please stop and restart, if not works right</p>
+    </div>
+    )}
     </>
   )
 }
