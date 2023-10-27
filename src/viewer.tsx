@@ -45,7 +45,7 @@ function Viewer() {
             username
         };
     
-        const { data } = await axios.post('http://localhost:5000/consumer', payload);
+        const { data } = await axios.post('https://stream.tplinks.online/view', payload);
         const desc = new RTCSessionDescription(data.sdp);
         peer.setRemoteDescription(desc).catch((e:any) => console.log(e));
     }
@@ -62,7 +62,7 @@ function Viewer() {
   }
 
   async function checkStreams() {
-    const res = await axios.get("http://localhost:5000/all");
+    const res = await axios.get("https://stream.tplinks.online/all");
     setStreams(res.data.data);
   }
 

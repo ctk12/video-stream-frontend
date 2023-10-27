@@ -51,13 +51,13 @@ function Broadcast() {
             sdp: peer.localDescription,
             username: value
         };
-        const { data } = await axios.post('http://localhost:5000/broadcast', payload);
+        const { data } = await axios.post('https://stream.tplinks.online/broadcast', payload);
         const desc = new RTCSessionDescription(data.sdp);
         peer.setRemoteDescription(desc).catch((e: any) => console.log(e));
     }
 
     async function validate(data: string) {
-      const result = await axios.post('http://localhost:5000/validate', { username: data });
+      const result = await axios.post('https://stream.tplinks.online/validate', { username: data });
       console.log(result.data);
       return result.data.msg;
     }
@@ -74,7 +74,7 @@ function Broadcast() {
       return null;
     });
     setValue((state: string) => {
-      axios.post('http://localhost:5000/close', { username: state });
+      axios.post('https://stream.tplinks.online/close', { username: state });
       return "";
     });
   }
