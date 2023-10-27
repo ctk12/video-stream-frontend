@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 function App() {
   const pathname = window.location.pathname;
-  const [isRear, setIsRear] = useState<boolean>(false);
+  const [isRear, setIsRear] = useState<string[]>([]);
 
   async function runOne() {
     const stream = await navigator.mediaDevices.getUserMedia({
@@ -17,8 +17,9 @@ function App() {
     });
     stream.getVideoTracks().forEach(track => {
       const caps = track.getCapabilities();
-      if (caps.facingMode?.includes("environment")) {
-        setIsRear(true);
+      console.log(caps.facingMode);
+      if (caps.facingMode) {
+        setIsRear(caps.facingMode);
       }
     });
   }
@@ -51,7 +52,12 @@ function App() {
         )}
     </div>
 
-    {isRear && <p>Back Camera available</p>}
+    {/* {isRear && <p>Back Camera available</p>} */}
+
+    <h3>Available camera facing modes</h3>
+    {isRear.map(item => (
+      <p>{item}</p>
+    ))}
 
 
     <p style={{ textAlign: "center" }}>Note: please stop and restart, if not works right</p>
