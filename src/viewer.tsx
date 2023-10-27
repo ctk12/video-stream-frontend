@@ -10,6 +10,8 @@ function Viewer() {
     const [loading, setLoading] = useState<boolean>(false);
     const [streams, setStreams] = useState<string[]>([]);
     const [activeStream, setActiveStream] = useState<string>("");
+    const [ipAddress, setIPAddress] = useState('');
+    console.log("ip", ipAddress);
 
     console.log("streams", streams, activeStream);
 
@@ -20,7 +22,10 @@ function Viewer() {
         peer.addTransceiver('audio', { direction: 'recvonly' });
         setPeerData(peer);
         setLoading(false);
-        setActiveStream(username);
+        setActiveStream(() => {
+          socket.emit("WATCHING", username, "add", ipAddress);
+          return username;
+        });
     }
     
     function createPeer(username: string) {
@@ -58,7 +63,10 @@ function Viewer() {
     peerData?.close();
     setStreamData(null);
     setPeerData(null);
-    setActiveStream("");
+    setActiveStream((state: string) => {
+      socket.emit("WATCHING", state, "remove", ipAddress);
+      return "";
+    });
   }
 
   async function checkStreams() {
@@ -66,8 +74,14 @@ function Viewer() {
     setStreams(res.data.data);
   }
 
+  async function getIp() {
+    const res = await axios.get("https://geolocation-db.com/json/")
+    setIPAddress(res.data.IPv4)
+}
+
   useEffect(() => {
     checkStreams();
+    getIp();
     socket.on('USER_REMOVED_USERNAME', (data) => {
       setActiveStream(state => {
         if (state === data) {
@@ -83,14 +97,27 @@ function Viewer() {
       setStreams((state: any) => [...state, data]);
     });
 
+    window.addEventListener('beforeunload', (event) => {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      void close();
+      event.returnValue = '';
+    });
+
     return () => {
-      close();
       socket.off('USER_REMOVED_USERNAME', (data) => {
         setStreams((state: any) => state.filter((item: string) => item !== data));
       });
 
       socket.off('USER_ADDED_USERNAME', (data) => {
         setStreams((state: any) => [...state, data]);
+      });
+
+      window.addEventListener('beforeunload', (event) => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        void close();
+        event.returnValue = '';
       });
     }
   }, []);

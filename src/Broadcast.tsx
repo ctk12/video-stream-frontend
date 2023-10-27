@@ -2,6 +2,7 @@ import axios from "axios";
 import Video from "./Video";
 import { useEffect, useState } from "react";
 import { aStyle } from "./buttonStyle";
+import { socket } from "./socket";
 
 function Broadcast() {
     const [value, setValue] = useState<string>("");
@@ -9,6 +10,7 @@ function Broadcast() {
     const [streamData, setStreamData] = useState<any>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState("");
+    const [watching, setWatching] = useState<any>({});
 
     async function init() {
         if (!value) {
@@ -77,6 +79,35 @@ function Broadcast() {
       axios.post('https://stream.tplinks.online/close', { username: state });
       return "";
     });
+    setWatching([]);
+  }
+
+  function handleSocket1(data: string, type: string, ip: string) {
+    if (data === value && ip !== "") {
+      console.log("WATCHING_UPDATE", data, type, ip);
+      if (type === "add") {
+        console.log("WATCHING_UPDATE", data, type, ip);
+        setWatching((state: any) => {
+          const stateCopy = {...state};
+          if (stateCopy[ip]) {
+            stateCopy[ip] += 1;
+          } else {
+            stateCopy[ip] = 1;
+          }
+          return stateCopy;
+        });
+      } else {
+        setWatching((state: any) => {
+          const stateCopy = {...state};
+          stateCopy[ip] -= 1;
+          const newObj: any = {};
+          Object.keys(stateCopy).filter(item => stateCopy[item] !== 0).map(item => {
+            newObj[item] = stateCopy[item];
+          })
+          return newObj;
+        });
+      }
+    }
   }
 
   useEffect(() => {
@@ -87,6 +118,8 @@ function Broadcast() {
       event.returnValue = '';
     });
 
+    socket.on('WATCHING_UPDATE', handleSocket1);
+
     return () => {
       window.removeEventListener('beforeunload', (event) => {
       event.preventDefault();
@@ -94,6 +127,8 @@ function Broadcast() {
       void close();
       event.returnValue = '';
     });
+
+    socket.off('WATCHING_UPDATE', handleSocket1);
     }
   }, []);
 
@@ -101,6 +136,7 @@ function Broadcast() {
     <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
        <div style={{ textAlign: "center" }}>{loading && (<p>Loading...</p>)}</div>
        {peerData && streamData && <p>Username: {value}</p>}
+       {peerData && streamData && <p>watching {Object.keys(watching).length}</p>}
        <Video style={{ maxHeight: streamData ? "500px" : "10px" }} srcObject={streamData} autoPlay muted />
       
          <div style={{ textAlign: "center", margin: "10px 0" }}>
