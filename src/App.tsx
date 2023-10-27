@@ -26,6 +26,9 @@ function App() {
       const arr: any = [];
       for (let i = 0; i < devices.length; i++) {
         arr.push(devices[i].label);
+        if (devices[i].label.includes("facing back")) {
+          setIsRear(true);
+        }
         console.log(devices[i].label);
       }
       setIsDevices(arr);
@@ -52,9 +55,9 @@ function App() {
   const capture = async (facingMode: string) => {
     const options = {
       audio: false,
-      video: {
-        facingMode,
-      },
+      video: facingMode === "environment" ? {
+        facingMode: { exact: "environment" }
+      } : true,
     };
 
     let stream;
