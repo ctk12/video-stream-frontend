@@ -79,7 +79,7 @@ function Broadcast() {
       axios.post('https://stream.tplinks.online/close', { username: state });
       return "";
     });
-    setWatching([]);
+    setWatching({});
   }
 
   function handleSocket1(data: string, type: string, ip: string) {
