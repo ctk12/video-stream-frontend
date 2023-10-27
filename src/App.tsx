@@ -2,75 +2,30 @@ import Broadcast from "./Broadcast";
 import { aStyle } from "./buttonStyle";
 import Viewer from "./viewer";
 import "./App.css";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 function App() {
   const pathname = window.location.pathname;
   const [isRear, setIsRear] = useState<boolean>(false);
-  const [isDevices, setIsDevices] = useState<any>([]);
-  const videoElm = useRef<any>(null);
 
-  navigator.mediaDevices.enumerateDevices().then(function(devices) {
-    for (let i = 0; i < devices.length; i++) {
-      if (devices[i].kind === "videoinput" && devices[i].label === "environment") {
-        // The rear camera is available.
+  async function runOne() {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+        // ? { facingMode: { exact: "environment" } }
+        // : true,
+      audio: true
+    });
+    stream.getVideoTracks().forEach(track => {
+      const caps = track.getCapabilities();
+      if (caps.facingMode?.includes("environment")) {
         setIsRear(true);
       }
-    }
-  });
-
-
-
-  function runOne() {
-    navigator.mediaDevices.enumerateDevices().then(function(devices) {
-      const arr: any = [];
-      for (let i = 0; i < devices.length; i++) {
-        arr.push(devices[i].label);
-        if (devices[i].label.includes("facing back")) {
-          setIsRear(true);
-        }
-        console.log(devices[i].label);
-      }
-      setIsDevices(arr);
     });
   }
-
-  
-  // const getCameraSelection = async () => {
-  //   const devices = await navigator.mediaDevices.enumerateDevices();
-  //   const videoDevices = devices.filter(device => device.kind === 'videoinput');
-  //   const options = videoDevices.map(videoDevice => {
-  //     return `<option value="${videoDevice.deviceId}">${videoDevice.label}</option>`;
-  //   });
-  //   // cameraOptions.innerHTML = options.join('');
-  //   return options;
-  // };
-
-  // console.log("cams", getCameraSelection());
 
   useEffect(() => {
     runOne();
   }, []);
-
-  const capture = async (facingMode: string) => {
-    const options = {
-      audio: false,
-      video: facingMode === "environment" ? {
-        facingMode: { exact: "environment" }
-      } : true,
-    };
-
-    let stream;
-    try {
-      stream = await navigator.mediaDevices.getUserMedia(options);
-    } catch (e) {
-      alert(e);
-      return;
-    }
-    videoElm.current!.srcObject = null;
-    videoElm.current!.srcObject = stream;
-    videoElm.current!.play();
-  }
 
   return (
     <>
@@ -96,16 +51,8 @@ function App() {
         )}
     </div>
 
-    <video ref={videoElm} controls autoPlay></video>
-    <button onClick={() => capture('user')}>Front</button>
-    <br/>
-    <button onClick={() => capture('environment')}>Back</button>
+    {isRear && <p>Back Camera available</p>}
 
-    {isRear && <p>Back available</p>}
-
-    {isDevices.map((item: any) => (
-      <p>{item}</p>
-    ))}
 
     <p style={{ textAlign: "center" }}>Note: please stop and restart, if not works right</p>
     </>

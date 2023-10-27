@@ -20,7 +20,12 @@ function Broadcast() {
         const userNameAvailable = await validate(value);
         if (userNameAvailable) {
           setLoading(true);
-          const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+              // ? { facingMode: { exact: "environment" } }
+              // : true,
+            audio: true
+          });
           setStreamData(stream);
           const peer = createPeer();
           stream.getTracks().forEach(track => peer.addTrack(track, stream));
@@ -60,7 +65,6 @@ function Broadcast() {
 
     async function validate(data: string) {
       const result = await axios.post('https://stream.tplinks.online/validate', { username: data });
-      console.log(result.data);
       return result.data.msg;
     }
 
@@ -82,14 +86,63 @@ function Broadcast() {
     setWatching({});
   }
 
+  function switchCam() {
+    setStreamData((state: any) => {
+      state?.getVideoTracks().forEach((track: any) => {
+        // console.log(track.getCapabilities());
+        // const options = {
+        //   facingMode: { exact: "environment" }
+        // }
+        // track.applyConstraints(options);
+        const constraints = track.getConstraints();
+        const settings = track.getSettings();
+        if (settings.facingMode === "user") {
+          constraints.facingMode = { exact: "environment" };
+        } else {
+          constraints.facingMode = { exact: "user" };
+        }
+        track.applyConstraints(constraints);
+        // console.log("constrain", track.getConstraints(), "sett", track.getSettings());
+        // console.log("tacks", track);
+      });
+      return state;
+    });
+  }
+
+  function switchMic() {
+    setStreamData((state: any) => {
+      state?.getTracks().forEach((track: any) => {
+        if (track.kind === "audio") {
+          if (track.enabled) {
+            track.enabled = false;
+            } else {
+              track.enabled = true;
+            }
+        }
+      });
+      return state;
+    });
+  }
+
+  function hideCam() {
+    setStreamData((state: any) => {
+      state?.getTracks().forEach((track: any) => {
+        if (track.kind === "video") {
+          if (track.enabled) {
+            track.enabled = false;
+            } else {
+              track.enabled = true;
+            }
+        }
+      });
+      return state;
+    });
+  }
+
   function handleSocket1(data: string, type: string, ip: string) {
-    console.log("value: ", value);
-    console.log("WATCHING_UPDATE OUT", data, type, ip);
     setValue(state => {
       if (data === state && ip !== "") {
-        console.log("WATCHING_UPDATE", data, type, ip);
         if (type === "add") {
-          console.log("WATCHING_UPDATE", data, type, ip);
           setWatching((state: any) => {
             const stateCopy = {...state};
             if (stateCopy[ip]) {
@@ -144,6 +197,13 @@ function Broadcast() {
        {peerData && streamData && <p>Username: {value}</p>}
        {peerData && streamData && <p>watching {Object.keys(watching).length}</p>}
        <Video style={{ maxHeight: streamData ? "500px" : "10px" }} srcObject={streamData} autoPlay muted />
+       {peerData && streamData && (
+        <>
+        <img src="/flip-camera.svg" onClick={() => switchCam()} style={{ cursor: "pointer" }} width={42} height={42} alt="" />
+        <button onClick={switchMic}>Mic</button>
+        <button onClick={hideCam}>Hide Cam</button>
+        </>
+       )}
       
          <div style={{ textAlign: "center", margin: "10px 0" }}>
          {!loading && (

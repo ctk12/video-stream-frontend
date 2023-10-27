@@ -11,9 +11,6 @@ function Viewer() {
     const [streams, setStreams] = useState<string[]>([]);
     const [activeStream, setActiveStream] = useState<string>("");
     const [ipAddress, setIPAddress] = useState('');
-    console.log("ip", ipAddress);
-
-    console.log("streams", streams, activeStream);
 
     async function init(username: string) {
         setLoading(true);
