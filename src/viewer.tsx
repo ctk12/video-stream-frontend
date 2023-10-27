@@ -2,24 +2,28 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import Video from "./Video";
 import { aStyle } from "./buttonStyle";
+import { socket } from "./socket";
 
 function Viewer() {
     const [peerData, setPeerData] = useState<any>(null);
     const [streamData, setStreamData] = useState<any>(null);
     const [loading, setLoading] = useState<boolean>(false);
+    const [streams, setStreams] = useState<string[]>([]);
+    const [activeStream, setActiveStream] = useState<string>("");
 
-    console.log("streamData", streamData);
+    console.log("streams", streams, activeStream);
 
-    async function init() {
+    async function init(username: string) {
         setLoading(true);
-        const peer = createPeer();
+        const peer = createPeer(username);
         peer.addTransceiver("video", { direction: "recvonly" });
         peer.addTransceiver('audio', { direction: 'recvonly' });
         setPeerData(peer);
         setLoading(false);
+        setActiveStream(username);
     }
     
-    function createPeer() {
+    function createPeer(username: string) {
         const peer = new RTCPeerConnection({
             iceServers: [
                 {
@@ -28,19 +32,20 @@ function Viewer() {
             ]
         });
         peer.ontrack = handleTrackEvent;
-        peer.onnegotiationneeded = () => handleNegotiationNeededEvent(peer);
+        peer.onnegotiationneeded = () => handleNegotiationNeededEvent(peer, username);
     
         return peer;
     }
     
-    async function handleNegotiationNeededEvent(peer: any) {
+    async function handleNegotiationNeededEvent(peer: any, username: string) {
         const offer = await peer.createOffer();
         await peer.setLocalDescription(offer);
         const payload = {
-            sdp: peer.localDescription
+            sdp: peer.localDescription,
+            username
         };
     
-        const { data } = await axios.post('https://stream.tplinks.online/view', payload);
+        const { data } = await axios.post('http://localhost:5000/consumer', payload);
         const desc = new RTCSessionDescription(data.sdp);
         peer.setRemoteDescription(desc).catch((e:any) => console.log(e));
     }
@@ -53,25 +58,71 @@ function Viewer() {
     peerData?.close();
     setStreamData(null);
     setPeerData(null);
+    setActiveStream("");
+  }
+
+  async function checkStreams() {
+    const res = await axios.get("http://localhost:5000/all");
+    setStreams(res.data.data);
   }
 
   useEffect(() => {
-    return close();
+    checkStreams();
+    socket.on('USER_REMOVED_USERNAME', (data) => {
+      setActiveStream(state => {
+        if (state === data) {
+          close();
+          return "";
+        }
+        return state;
+      });
+      setStreams((state: any) => state.filter((item: string) => item !== data));
+    });
+
+    socket.on('USER_ADDED_USERNAME', (data) => {
+      setStreams((state: any) => [...state, data]);
+    });
+
+    return () => {
+      close();
+      socket.off('USER_REMOVED_USERNAME', (data) => {
+        setStreams((state: any) => state.filter((item: string) => item !== data));
+      });
+
+      socket.off('USER_ADDED_USERNAME', (data) => {
+        setStreams((state: any) => [...state, data]);
+      });
+    }
   }, []);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
-      <h3 style={{ marginBottom: "20px", textAlign: "center" }}>Viewer</h3>
+    <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", width: "100%" }}>
+
+      <div style={{ textAlign: "center" }}>
+        { streams.length > 0 ? (<h3>available live streams</h3>) : (<h3>No streams available</h3>)}
+      </div>
+      <div style={{ textAlign: "center", width: "100%" }}>
+      <div style={{display: "flex", gap: "20px", padding: "10px", width: "90%", overflowX: "scroll", marginBottom: "20px"}}>
+        {streams.map((item: string) => (
+          <div key={item} onClick={() => init(item)} style={{ textAlign: "center", cursor: "pointer" }}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: 42 , height: 42}}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <p style={{ margin: "2px 0" }}>{item}</p>
+          </div>
+        ))}
+      </div>
+      </div>
+
       <div style={{ textAlign: "center" }}>{loading && (<p>Loading...</p>)}</div>
-       <Video style={{ maxHeight: streamData ? "500px" : "10px" }} srcObject={streamData} autoPlay />
-       
+       {peerData && streamData && <p>Username: {activeStream}</p>}
+       <Video style={{ maxHeight: streamData ? "500px" : "10px" }} srcObject={streamData} autoPlay controls={streamData ? true : false} />
+    
          <div style={{ textAlign: "center", margin: "10px 0" }}>
          {!loading && (
           <>
-          {peerData && streamData ? (
+          {peerData && streamData && (
            <button style={aStyle} onClick={close} >Stop</button>
-          ):(
-            <button style={aStyle} onClick={init} >View Stream</button>
           )}
           </>
          )}
