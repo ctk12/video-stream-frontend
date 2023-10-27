@@ -75,9 +75,10 @@ function Viewer() {
   }
 
   async function getIp() {
-    const res = await axios.get("https://geolocation-db.com/json/")
-    setIPAddress(res.data.IPv4)
-}
+    const response = await fetch("https://ipapi.co/json/")
+    const data = await response.json()
+    setIPAddress(data.ip)
+  }
 
   useEffect(() => {
     checkStreams();
