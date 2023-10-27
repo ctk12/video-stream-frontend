@@ -83,6 +83,8 @@ function Broadcast() {
   }
 
   function handleSocket1(data: string, type: string, ip: string) {
+    console.log("value: ", value);
+    console.log("WATCHING_UPDATE OUT", data, type, ip);
     if (data === value && ip !== "") {
       console.log("WATCHING_UPDATE", data, type, ip);
       if (type === "add") {
