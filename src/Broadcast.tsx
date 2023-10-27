@@ -86,28 +86,28 @@ function Broadcast() {
     setWatching({});
   }
 
-  function switchCam() {
-    setStreamData((state: any) => {
-      state?.getVideoTracks().forEach((track: any) => {
-        // console.log(track.getCapabilities());
-        // const options = {
-        //   facingMode: { exact: "environment" }
-        // }
-        // track.applyConstraints(options);
-        const constraints = track.getConstraints();
-        const settings = track.getSettings();
-        if (settings.facingMode === "user") {
-          constraints.facingMode = { exact: "environment" };
-        } else {
-          constraints.facingMode = { exact: "user" };
-        }
-        track.applyConstraints(constraints);
-        // console.log("constrain", track.getConstraints(), "sett", track.getSettings());
-        // console.log("tacks", track);
-      });
-      return state;
-    });
-  }
+  // function switchCam() {
+  //   setStreamData((state: any) => {
+  //     state?.getVideoTracks().forEach((track: any) => {
+  //       // console.log(track.getCapabilities());
+  //       // const options = {
+  //       //   facingMode: { exact: "environment" }
+  //       // }
+  //       // track.applyConstraints(options);
+  //       const constraints = track.getConstraints();
+  //       const settings = track.getSettings();
+  //       if (settings.facingMode === "user") {
+  //         constraints.facingMode = { exact: "environment" };
+  //       } else {
+  //         constraints.facingMode = { exact: "user" };
+  //       }
+  //       track.applyConstraints(constraints);
+  //       // console.log("constrain", track.getConstraints(), "sett", track.getSettings());
+  //       // console.log("tacks", track);
+  //     });
+  //     return state;
+  //   });
+  // }
 
   function switchMic() {
     setStreamData((state: any) => {
@@ -199,7 +199,7 @@ function Broadcast() {
        <Video style={{ maxHeight: streamData ? "500px" : "10px" }} srcObject={streamData} autoPlay muted />
        {peerData && streamData && (
         <>
-        <img src="/flip-camera.svg" onClick={() => switchCam()} style={{ cursor: "pointer" }} width={42} height={42} alt="" />
+        {/* <img src="/flip-camera.svg" onClick={() => switchCam()} style={{ cursor: "pointer" }} width={42} height={42} alt="" /> */}
         <button onClick={switchMic}>Mic</button>
         <button onClick={hideCam}>Hide Cam</button>
         </>
