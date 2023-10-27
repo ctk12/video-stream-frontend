@@ -85,31 +85,35 @@ function Broadcast() {
   function handleSocket1(data: string, type: string, ip: string) {
     console.log("value: ", value);
     console.log("WATCHING_UPDATE OUT", data, type, ip);
-    if (data === value && ip !== "") {
-      console.log("WATCHING_UPDATE", data, type, ip);
-      if (type === "add") {
+    setValue(state => {
+      if (data === state && ip !== "") {
         console.log("WATCHING_UPDATE", data, type, ip);
-        setWatching((state: any) => {
-          const stateCopy = {...state};
-          if (stateCopy[ip]) {
-            stateCopy[ip] += 1;
-          } else {
-            stateCopy[ip] = 1;
-          }
-          return stateCopy;
-        });
-      } else {
-        setWatching((state: any) => {
-          const stateCopy = {...state};
-          stateCopy[ip] -= 1;
-          const newObj: any = {};
-          Object.keys(stateCopy).filter(item => stateCopy[item] !== 0).map(item => {
-            newObj[item] = stateCopy[item];
-          })
-          return newObj;
-        });
+        if (type === "add") {
+          console.log("WATCHING_UPDATE", data, type, ip);
+          setWatching((state: any) => {
+            const stateCopy = {...state};
+            if (stateCopy[ip]) {
+              stateCopy[ip] += 1;
+            } else {
+              stateCopy[ip] = 1;
+            }
+            return stateCopy;
+          });
+        } else {
+          setWatching((state: any) => {
+            const stateCopy = {...state};
+            stateCopy[ip] -= 1;
+            const newObj: any = {};
+            Object.keys(stateCopy).filter(item => stateCopy[item] !== 0).map(item => {
+              newObj[item] = stateCopy[item];
+            })
+            return newObj;
+          });
+        }
       }
-    }
+
+      return state;
+    });
   }
 
   useEffect(() => {
