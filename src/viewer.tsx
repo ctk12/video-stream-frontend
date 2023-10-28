@@ -12,9 +12,8 @@ function Viewer() {
     const [activeStream, setActiveStream] = useState<string>("");
     const [ipAddress, setIPAddress] = useState('');
 
-    console.log(ipAddress);
-
     async function init(username: string) {
+        close();
         setLoading(true);
         const peer = createPeer(username);
         peer.addTransceiver("video", { direction: "recvonly" });
@@ -51,7 +50,7 @@ function Viewer() {
     
         const { data } = await axios.post('https://stream.tplinks.online/view', payload);
         const desc = new RTCSessionDescription(data.sdp);
-        peer.setRemoteDescription(desc).catch((e:any) => console.log(e));
+        peer.setRemoteDescription(desc).catch((e:any) => console.log("descError", e));
     }
     
     function handleTrackEvent(e: any) {

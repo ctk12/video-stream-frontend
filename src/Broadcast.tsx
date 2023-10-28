@@ -62,7 +62,7 @@ function Broadcast() {
         };
         const { data } = await axios.post('https://stream.tplinks.online/broadcast', payload);
         const desc = new RTCSessionDescription(data.sdp);
-        peer.setRemoteDescription(desc).catch((e: any) => console.log(e));
+        peer.setRemoteDescription(desc).catch((e: any) => console.log("descError", e));
     }
 
     async function validate(data: string) {
@@ -87,29 +87,6 @@ function Broadcast() {
     });
     setWatching({});
   }
-
-  // function switchCam() {
-  //   setStreamData((state: any) => {
-  //     state?.getVideoTracks().forEach((track: any) => {
-  //       // console.log(track.getCapabilities());
-  //       // const options = {
-  //       //   facingMode: { exact: "environment" }
-  //       // }
-  //       // track.applyConstraints(options);
-  //       const constraints = track.getConstraints();
-  //       const settings = track.getSettings();
-  //       if (settings.facingMode === "user") {
-  //         constraints.facingMode = { exact: "environment" };
-  //       } else {
-  //         constraints.facingMode = { exact: "user" };
-  //       }
-  //       track.applyConstraints(constraints);
-  //       // console.log("constrain", track.getConstraints(), "sett", track.getSettings());
-  //       // console.log("tacks", track);
-  //     });
-  //     return state;
-  //   });
-  // }
 
   function switchMic() {
     setStreamData((state: any) => {
