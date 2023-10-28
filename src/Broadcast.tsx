@@ -4,13 +4,15 @@ import { useEffect, useState } from "react";
 import { aStyle } from "./buttonStyle";
 import { socket } from "./socket";
 
-function Broadcast({isRear}: any) {
+function Broadcast() {
     const [value, setValue] = useState<string>("");
     const [peerData, setPeerData] = useState<any>(null);
     const [streamData, setStreamData] = useState<any>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState("");
     const [watching, setWatching] = useState<any>({});
+    const [cam, setCam] = useState(true);
+    const [mic, setMic] = useState(true);
 
     async function init() {
         if (!value) {
@@ -109,35 +111,39 @@ function Broadcast({isRear}: any) {
   //   });
   // }
 
-  // function switchMic() {
-  //   setStreamData((state: any) => {
-  //     state?.getTracks().forEach((track: any) => {
-  //       if (track.kind === "audio") {
-  //         if (track.enabled) {
-  //           track.enabled = false;
-  //           } else {
-  //             track.enabled = true;
-  //           }
-  //       }
-  //     });
-  //     return state;
-  //   });
-  // }
+  function switchMic() {
+    setStreamData((state: any) => {
+      state?.getTracks().forEach((track: any) => {
+        if (track.kind === "audio") {
+          if (track.enabled) {
+            track.enabled = false;
+            setMic(false);
+          } else {
+            track.enabled = true;
+            setMic(true);
+          }
+        }
+      });
+      return state;
+    });
+  }
 
-  // function hideCam() {
-  //   setStreamData((state: any) => {
-  //     state?.getTracks().forEach((track: any) => {
-  //       if (track.kind === "video") {
-  //         if (track.enabled) {
-  //           track.enabled = false;
-  //           } else {
-  //             track.enabled = true;
-  //           }
-  //       }
-  //     });
-  //     return state;
-  //   });
-  // }
+  function hideCam() {
+    setStreamData((state: any) => {
+      state?.getTracks().forEach((track: any) => {
+        if (track.kind === "video") {
+          if (track.enabled) {
+            track.enabled = false;
+            setCam(false);
+          } else {
+            track.enabled = true;
+            setCam(true);
+          }
+        }
+      });
+      return state;
+    });
+  }
 
   function handleSocket1(data: string, type: string, ip: string) {
     setValue(state => {
@@ -196,8 +202,16 @@ function Broadcast({isRear}: any) {
        <div style={{ textAlign: "center" }}>{loading && (<p>Loading...</p>)}</div>
        {peerData && streamData && <p>Username: {value}</p>}
        {peerData && streamData && <p>watching {Object.keys(watching).length}</p>}
-       <Video style={{ maxHeight: streamData ? "500px" : "10px" }} srcObject={streamData} peerData={peerData} view={false} isRear={isRear} autoPlay muted />
-      
+       <Video style={{ maxHeight: streamData ? "500px" : "10px" }} srcObject={streamData} peerData={peerData} autoPlay muted />
+       {peerData && streamData && (
+        <>
+        <br />
+        <button onClick={hideCam}>{cam ? "Hide Cam" : "Show Cam"}</button>
+        <br />
+        <button onClick={switchMic}>{mic ? "Off Mic" : "On Mic"}</button>
+        </>
+       )}
+
          <div style={{ textAlign: "center", margin: "10px 0" }}>
          {!loading && (
           <>
