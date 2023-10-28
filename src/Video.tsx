@@ -13,6 +13,7 @@ export default function Video({ srcObject, peerData, view, isRear, ...props }: P
   const [cam, setCam] = useState(true);
   const [mic, setMic] = useState(true);
   const connections = [peerData];
+  let stream: any = srcObject;
 
   function hideCam() {
     // setStreamData((state: any) => {
@@ -45,28 +46,29 @@ export default function Video({ srcObject, peerData, view, isRear, ...props }: P
     });
   }
 
-  // const switchCam = async (facingMode: string) => {
-  //   const options = {
-  //     audio: false,
-  //     video: facingMode === "environment" ? {
-  //       facingMode: { exact: "environment" }
-  //     } : true,
-  //   };
+  const capture = async (facingMode: string) => {
+    const options = {
+      audio: false,
+      video: facingMode === "environment" ? {
+        facingMode: { exact: "environment" }
+      } : true,
+    };
 
-  //   try {
-  //     if (stream) {
-  //       const tracks = stream.getTracks();
-  //       tracks.forEach(track => track.stop());
-  //     }
-  //     stream = await navigator.mediaDevices.getUserMedia(options);
-  //   } catch (e) {
-  //     alert(e);
-  //     return;
-  //   }
-  //   refVideo.current!.srcObject = null;
-  //   refVideo.current!.srcObject = stream;
-  //   refVideo.current!.play();
-  // }
+    try {
+      if (stream) {
+        stream?.getTracks().forEach(function (track: { stop: () => void; }) {
+          track.stop();
+        });
+      }
+      stream = await navigator.mediaDevices.getUserMedia(options);
+    } catch (e) {
+      alert(e);
+      return;
+    }
+    refVideo.current!.srcObject = null;
+    refVideo.current!.srcObject = stream;
+    refVideo.current!.play();
+  }
 
   function setCamera(selectedCamera: string) {
     navigator.mediaDevices
@@ -104,6 +106,10 @@ export default function Video({ srcObject, peerData, view, isRear, ...props }: P
   return (
   <>
     <video ref={refVideo} {...props} />
+    <br />
+    <button onClick={() => capture('user')}>Front</button>
+    <br/>
+    <button onClick={() => capture('environment')}>Back</button>
     {!view && srcObject && (
       <>
       {isRear && <img src="/flip-camera.svg" onClick={() => setSwitchCam(!cam)} style={{ cursor: "pointer" }} width={42} height={42} alt="" />}
