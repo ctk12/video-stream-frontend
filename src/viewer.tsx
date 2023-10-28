@@ -4,7 +4,7 @@ import Video from "./Video";
 import { aStyle } from "./buttonStyle";
 import { socket } from "./socket";
 
-function Viewer() {
+function Viewer({isRear}: any) {
     const [peerData, setPeerData] = useState<any>(null);
     const [streamData, setStreamData] = useState<any>(null);
     const [loading, setLoading] = useState<boolean>(false);
@@ -141,7 +141,7 @@ function Viewer() {
 
       <div style={{ textAlign: "center" }}>{loading && (<p>Loading...</p>)}</div>
        {peerData && streamData && <p>Username: {activeStream}</p>}
-       <Video style={{ maxHeight: streamData ? "500px" : "10px" }} srcObject={streamData} autoPlay controls={streamData ? true : false} />
+       <Video style={{ maxHeight: streamData ? "500px" : "10px" }} srcObject={streamData} autoPlay controls={streamData ? true : false} view={true} isRear={isRear} peerData={peerData} />
     
          <div style={{ textAlign: "center", margin: "10px 0" }}>
          {!loading && (

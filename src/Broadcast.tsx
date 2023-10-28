@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { aStyle } from "./buttonStyle";
 import { socket } from "./socket";
 
-function Broadcast() {
+function Broadcast({isRear}: any) {
     const [value, setValue] = useState<string>("");
     const [peerData, setPeerData] = useState<any>(null);
     const [streamData, setStreamData] = useState<any>(null);
@@ -109,35 +109,35 @@ function Broadcast() {
   //   });
   // }
 
-  function switchMic() {
-    setStreamData((state: any) => {
-      state?.getTracks().forEach((track: any) => {
-        if (track.kind === "audio") {
-          if (track.enabled) {
-            track.enabled = false;
-            } else {
-              track.enabled = true;
-            }
-        }
-      });
-      return state;
-    });
-  }
+  // function switchMic() {
+  //   setStreamData((state: any) => {
+  //     state?.getTracks().forEach((track: any) => {
+  //       if (track.kind === "audio") {
+  //         if (track.enabled) {
+  //           track.enabled = false;
+  //           } else {
+  //             track.enabled = true;
+  //           }
+  //       }
+  //     });
+  //     return state;
+  //   });
+  // }
 
-  function hideCam() {
-    setStreamData((state: any) => {
-      state?.getTracks().forEach((track: any) => {
-        if (track.kind === "video") {
-          if (track.enabled) {
-            track.enabled = false;
-            } else {
-              track.enabled = true;
-            }
-        }
-      });
-      return state;
-    });
-  }
+  // function hideCam() {
+  //   setStreamData((state: any) => {
+  //     state?.getTracks().forEach((track: any) => {
+  //       if (track.kind === "video") {
+  //         if (track.enabled) {
+  //           track.enabled = false;
+  //           } else {
+  //             track.enabled = true;
+  //           }
+  //       }
+  //     });
+  //     return state;
+  //   });
+  // }
 
   function handleSocket1(data: string, type: string, ip: string) {
     setValue(state => {
@@ -196,14 +196,7 @@ function Broadcast() {
        <div style={{ textAlign: "center" }}>{loading && (<p>Loading...</p>)}</div>
        {peerData && streamData && <p>Username: {value}</p>}
        {peerData && streamData && <p>watching {Object.keys(watching).length}</p>}
-       <Video style={{ maxHeight: streamData ? "500px" : "10px" }} srcObject={streamData} autoPlay muted />
-       {peerData && streamData && (
-        <>
-        {/* <img src="/flip-camera.svg" onClick={() => switchCam()} style={{ cursor: "pointer" }} width={42} height={42} alt="" /> */}
-        <button onClick={switchMic}>Mic</button>
-        <button onClick={hideCam}>Hide Cam</button>
-        </>
-       )}
+       <Video style={{ maxHeight: streamData ? "500px" : "10px" }} srcObject={streamData} peerData={peerData} view={false} isRear={isRear} autoPlay muted />
       
          <div style={{ textAlign: "center", margin: "10px 0" }}>
          {!loading && (
