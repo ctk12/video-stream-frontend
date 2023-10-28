@@ -2,7 +2,7 @@ import Broadcast from "./Broadcast";
 import { aStyle } from "./buttonStyle";
 import Viewer from "./viewer";
 import "./App.css";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 function App() {
   const pathname = window.location.pathname;
@@ -39,17 +39,17 @@ function App() {
   // }
 
   // console.log("isRear", isRear)
-  function runOne() {
-    navigator.mediaDevices.enumerateDevices().then(function(devices) {
-      for (let i = 0; i < devices.length; i++) {
-        console.log(devices[i]);
-      }
-    });
-  }
+  // function runOne() {
+  //   navigator.mediaDevices.enumerateDevices().then(function(devices) {
+  //     for (let i = 0; i < devices.length; i++) {
+  //       console.log(devices[i]);
+  //     }
+  //   });
+  // }
 
-  useEffect(() => {
-    runOne();
-  }, []);
+  // useEffect(() => {
+  //   runOne();
+  // }, []);
 
   return (
     <>
