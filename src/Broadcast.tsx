@@ -21,6 +21,7 @@ function Broadcast() {
         }
         const userNameAvailable = await validate(value);
         if (userNameAvailable) {
+          close();
           setLoading(true);
           const stream = await navigator.mediaDevices.getUserMedia({
             video: true,
