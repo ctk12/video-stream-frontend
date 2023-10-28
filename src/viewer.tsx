@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import Video from "./Video";
 import { aStyle } from "./buttonStyle";
 import { socket } from "./socket";
-import { machineIdSync} from 'node-machine-id';
 
 function Viewer() {
     const [peerData, setPeerData] = useState<any>(null);
@@ -11,7 +10,9 @@ function Viewer() {
     const [loading, setLoading] = useState<boolean>(false);
     const [streams, setStreams] = useState<string[]>([]);
     const [activeStream, setActiveStream] = useState<string>("");
-    const [ipAddress] = useState(machineIdSync());
+    const [ipAddress, setIPAddress] = useState('');
+
+    console.log(ipAddress);
 
     async function init(username: string) {
         setLoading(true);
@@ -72,8 +73,16 @@ function Viewer() {
     setStreams(res.data.data);
   }
 
+  async function getIp() {
+    fetch('https://api.ipify.org?format=json')
+      .then(response => response.json())
+      .then(data => setIPAddress(data.ip))
+      .catch(error => console.log(error))
+  }
+
   useEffect(() => {
     checkStreams();
+    getIp();
     socket.on('USER_REMOVED_USERNAME', (data) => {
       setActiveStream(state => {
         if (state === data) {
