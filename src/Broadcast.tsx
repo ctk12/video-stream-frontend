@@ -198,7 +198,7 @@ function Broadcast() {
             <>
             <div style={{ width: "100%", display: "flex", flexDirection: "column", justifyContent: "center", gap: "10px" }}>
             <p style={{ alignSelf: "flex-start" }}>Username</p>
-            <input style={{ margin: "0 10px 0 0", padding: "10px" }} placeholder="enter username" type="text" onChange={(e) => setValue(e.target.value)} />
+            <input style={{ margin: "0", padding: "10px" }} placeholder="enter username" type="text" onChange={(e) => setValue(e.target.value)} />
             <button style={aStyle} onClick={init} >Start Stream</button>
             </div>
             {error && <p style={{ color: "red" }}>{error}</p>}
