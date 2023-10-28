@@ -23,7 +23,9 @@ function Broadcast() {
         if (userNameAvailable) {
           setLoading(true);
           const stream = await navigator.mediaDevices.getUserMedia({
-            video: true,
+            video: {
+              facingMode: { exact: "environment" }
+            },
               // ? { facingMode: { exact: "environment" } }
               // : true,
             audio: true
