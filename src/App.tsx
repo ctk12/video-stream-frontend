@@ -2,35 +2,43 @@ import Broadcast from "./Broadcast";
 import { aStyle } from "./buttonStyle";
 import Viewer from "./viewer";
 import "./App.css";
-import { useState } from "react";
-import Webcam from "react-webcam";
+import { useRef, useState } from "react";
 
 function App() {
   const pathname = window.location.pathname;
   const [isRear] = useState(false);
-  const [facingMode, setFacingMode] = useState({
-    facingMode: "user"
-  });
+  // const [facingMode, setFacingMode] = useState({
+  //   facingMode: "user"
+  // });
   // const webcamRef = useRef(null);
   // const [isCameraPresent, setIsCameraPresent] = useState(false);
+  const videoElm = useRef<any>(null);
+  let stream: any;
+  const capture = async (facingMode: string) => {
+    const options = {
+      audio: false,
+      video: facingMode === "environment" ? {
+        facingMode: { exact: "environment" }
+      } : true,
+    };
+
+    try {
+      if (stream) {
+        stream?.getTracks().forEach(function (track: { stop: () => void; }) {
+          track.stop();
+        });
+      }
+      stream = await navigator.mediaDevices.getUserMedia(options);
+    } catch (e) {
+      alert(e);
+      return;
+    }
+    videoElm.current!.srcObject = null;
+    videoElm.current!.srcObject = stream;
+    videoElm.current!.play();
+  }
 
   console.log("isRear", isRear)
-
-  function handleSwitchCamera() {
-    setFacingMode((prevFacingMode: any) => {
-      if (prevFacingMode.video === true) {
-        return {
-          facingMode: "environment"
-        };
-      } else {
-        return {
-          facingMode: "user"
-        }
-      }
-
-      return prevFacingMode;
-    });
-  }
 
   return (
     <>
@@ -58,8 +66,10 @@ function App() {
 
     {isRear ? (<p>Back Available</p>) : (<p>Back Not Available</p>)}
 
-    <Webcam videoConstraints={facingMode} />
-    <button onClick={handleSwitchCamera}>Switch Camera</button>
+    <video ref={videoElm} controls autoPlay></video>
+    <button onClick={() => capture('user')}>Front</button>
+    <br/>
+    <button onClick={() => capture('environment')}>Back</button>
 
     <p style={{ textAlign: "center" }}>Note: please stop and restart, if not works right</p>
     </>
