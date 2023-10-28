@@ -114,6 +114,8 @@ export default function Video({ srcObject, peerData, view, isRear, ...props }: P
       <button onClick={switchMic}>{mic ? "Off Mic" : "On Mic"}</button>
       </>
     )}
+    <br />
+    <img src="/flip-camera.svg" onClick={() => setSwitchCam(!cam)} style={{ cursor: "pointer" }} width={42} height={42} alt="" />
   </>
   );
 }
