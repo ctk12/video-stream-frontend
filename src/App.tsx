@@ -2,39 +2,35 @@ import Broadcast from "./Broadcast";
 import { aStyle } from "./buttonStyle";
 import Viewer from "./viewer";
 import "./App.css";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import Webcam from "react-webcam";
 
 function App() {
   const pathname = window.location.pathname;
   const [isRear, setIsRear] = useState(false);
+  const [facingMode, setFacingMode] = useState({
+    facingMode: "user"
+  });
+  // const webcamRef = useRef(null);
+  // const [isCameraPresent, setIsCameraPresent] = useState(false);
 
   console.log("isRear", isRear)
 
-  async function hasRearCamera(): Promise<void> {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    const rearCamera = devices.find((device: any) => device.kind === "video" && device.facingMode === "environment");
-    if (rearCamera) {
-      // The device has a rear camera.
-      setIsRear(true);
-    } else {
-      // setIsRear(false);
-      // The device does not have a rear camera.
-    }
-    // let stream: any = null;
-    // stream = await navigator.mediaDevices.getUserMedia({video: {facingMode: "environment"}}).then(devices => {
-    //   const isRearData = [devices].some((device: any) => device.kind === "videoinput" && device.facingMode === "environment");
-    //   setIsRear(isRearData);
-    //   // console.log("in rear", isRearData);
-    // });
-    // stream?.getTracks().forEach(function (track: { stop: () => void; }) {
-    //   track.stop();
-    // });
-    // stream = null;
-  }
+  function handleSwitchCamera() {
+    setFacingMode((prevFacingMode: any) => {
+      if (prevFacingMode.video === true) {
+        return {
+          facingMode: "environment"
+        };
+      } else {
+        return {
+          facingMode: "user"
+        }
+      }
 
-  useEffect(() => {
-    hasRearCamera();
-  }, []);
+      return prevFacingMode;
+    });
+  }
 
   return (
     <>
@@ -61,6 +57,9 @@ function App() {
     </div>
 
     {isRear ? (<p>Back Available</p>) : (<p>Back Not Available</p>)}
+
+    <Webcam videoConstraints={facingMode} />
+    <button onClick={handleSwitchCamera}>Switch Camera</button>
 
     <p style={{ textAlign: "center" }}>Note: please stop and restart, if not works right</p>
     </>
