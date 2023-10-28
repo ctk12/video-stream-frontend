@@ -7,7 +7,7 @@ import Webcam from "react-webcam";
 
 function App() {
   const pathname = window.location.pathname;
-  const [isRear, setIsRear] = useState(false);
+  const [isRear] = useState(false);
   const [facingMode, setFacingMode] = useState({
     facingMode: "user"
   });
