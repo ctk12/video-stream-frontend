@@ -73,10 +73,8 @@ function Viewer() {
   }
 
   async function getIp() {
-    fetch('https://api.ipify.org?format=json')
-      .then(response => response.json())
-      .then(data => setIPAddress(data.ip))
-      .catch(error => console.log(error))
+    const res = await axios.get("https://trimplo.online/getip.php");
+    setIPAddress(res.data);
   }
 
   useEffect(() => {
@@ -143,7 +141,7 @@ function Viewer() {
 
       <div style={{ textAlign: "center" }}>{loading && (<p>Loading...</p>)}</div>
        {peerData && streamData && <p>Username: {activeStream}</p>}
-       <Video style={{ maxHeight: streamData ? "500px" : "10px" }} srcObject={streamData} autoPlay controls={streamData ? true : false} peerData={peerData} />
+       <Video style={{ maxHeight: streamData ? "500px" : "10px" }} srcObject={streamData} autoPlay controls={streamData ? true : false}/>
     
          <div style={{ textAlign: "center", margin: "10px 0" }}>
          {!loading && (

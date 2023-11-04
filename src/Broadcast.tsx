@@ -179,7 +179,7 @@ function Broadcast() {
        <div style={{ textAlign: "center" }}>{loading && (<p>Loading...</p>)}</div>
        {peerData && streamData && <p>Username: {value}</p>}
        {peerData && streamData && <p>watching {Object.keys(watching).length}</p>}
-       <Video style={{ maxHeight: streamData ? "500px" : "10px" }} srcObject={streamData} peerData={peerData} autoPlay muted />
+       <Video style={{ maxHeight: streamData ? "500px" : "10px" }} srcObject={streamData} autoPlay muted />
        {peerData && streamData && (
         <>
         <br />
