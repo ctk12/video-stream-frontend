@@ -60,13 +60,13 @@ function Broadcast() {
             sdp: peer.localDescription,
             username: value
         };
-        const { data } = await axios.post('https://video-stream-backend.vercel.app/broadcast', payload);
+        const { data } = await axios.post('https://stream.tplinks.online/broadcast', payload);
         const desc = new RTCSessionDescription(data.sdp);
         peer.setRemoteDescription(desc).catch((e: any) => console.log("descError", e));
     }
 
     async function validate(data: string) {
-      const result = await axios.post('https://video-stream-backend.vercel.app/validate', { username: data });
+      const result = await axios.post('https://stream.tplinks.online/validate', { username: data });
       return result.data.msg;
     }
 
@@ -82,7 +82,7 @@ function Broadcast() {
       return null;
     });
     setValue((state: string) => {
-      axios.post('https://video-stream-backend.vercel.app/close', { username: state });
+      axios.post('https://stream.tplinks.online/close', { username: state });
       return "";
     });
     setWatching({});

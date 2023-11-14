@@ -1,5 +1,5 @@
 import { io } from "socket.io-client";
 
-const URL = "https://video-stream-backend.vercel.app";
+const URL = "https://stream.tplinks.online";
 
 export const socket = io(URL);

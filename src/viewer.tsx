@@ -48,7 +48,7 @@ function Viewer() {
             username
         };
     
-        const { data } = await axios.post('https://video-stream-backend.vercel.app/view', payload);
+        const { data } = await axios.post('https://stream.tplinks.online/view', payload);
         const desc = new RTCSessionDescription(data.sdp);
         peer.setRemoteDescription(desc).catch((e:any) => console.log("descError", e));
     }
@@ -68,7 +68,7 @@ function Viewer() {
   }
 
   async function checkStreams() {
-    const res = await axios.get("https://video-stream-backend.vercel.app/all");
+    const res = await axios.get("https://stream.tplinks.online/all");
     setStreams(res.data.data);
   }
 
