@@ -73,7 +73,7 @@ function Viewer() {
   }
 
   async function getIp() {
-    const res = await axios.get("https://trimplo.online/getip.php");
+    const res = await axios.get("https://php-get-ip.vercel.app");
     setIPAddress(res.data);
   }
 
