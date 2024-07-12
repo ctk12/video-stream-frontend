@@ -1,5 +1,9 @@
-import { io } from "socket.io-client";
+import SocketIOClient from "socket.io-client";
 
-const URL = "https://video-stream-backend.vercel.app/api/socketio";
+const BASE_URL = "https://video-stream-backend.vercel.app";
 
-export const socket = io(URL);
+const socket = SocketIOClient(BASE_URL, {
+    path: "/api/socketio",
+});
+
+export { socket };
