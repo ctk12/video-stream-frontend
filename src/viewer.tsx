@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import Video from "./Video";
 import { aStyle } from "./buttonStyle";
-import { socket } from "./socket";
+import { BASE_URL, socket } from "./socket";
 
 function Viewer() {
     const [peerData, setPeerData] = useState<any>(null);
@@ -48,7 +48,7 @@ function Viewer() {
             username
         };
     
-        const { data } = await axios.post('https://video-stream-backend.vercel.app/api/view', payload);
+        const { data } = await axios.post(`${BASE_URL}/view`, payload);
         const desc = new RTCSessionDescription(data.sdp);
         peer.setRemoteDescription(desc).catch((e:any) => console.log("descError", e));
     }
@@ -68,7 +68,7 @@ function Viewer() {
   }
 
   async function checkStreams() {
-    const res = await axios.get("https://video-stream-backend.vercel.app/api/all");
+    const res = await axios.get(`${BASE_URL}/all`);
     setStreams(res.data.data);
   }
 

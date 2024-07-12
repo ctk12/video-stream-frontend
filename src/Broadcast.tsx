@@ -2,7 +2,7 @@ import axios from "axios";
 import Video from "./Video";
 import { useEffect, useState } from "react";
 import { aStyle } from "./buttonStyle";
-import { socket } from "./socket";
+import { BASE_URL, socket } from "./socket";
 
 function Broadcast() {
     const [value, setValue] = useState<string>("");
@@ -60,13 +60,13 @@ function Broadcast() {
             sdp: peer.localDescription,
             username: value
         };
-        const { data } = await axios.post('https://video-stream-backend.vercel.app/api/broadcast', payload);
+        const { data } = await axios.post(`${BASE_URL}/broadcast`, payload);
         const desc = new RTCSessionDescription(data.sdp);
         peer.setRemoteDescription(desc).catch((e: any) => console.log("descError", e));
     }
 
     async function validate(data: string) {
-      const result = await axios.post('https://video-stream-backend.vercel.app/api/validate', { username: data });
+      const result = await axios.post(`${BASE_URL}/validate`, { username: data });
       return result.data.msg;
     }
 
@@ -82,7 +82,7 @@ function Broadcast() {
       return null;
     });
     setValue((state: string) => {
-      axios.post('https://video-stream-backend.vercel.app/api/close', { username: state });
+      axios.post(`${BASE_URL}/close`, { username: state });
       return "";
     });
     setWatching({});
